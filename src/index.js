@@ -1,5 +1,5 @@
 import express from "express";
-import pool from "./db.js";
+import { connectDB } from "./db.js";
 const app = express();
 
 const PORT = 3000;
@@ -12,7 +12,7 @@ app.get("/", (req, res) => {
 
 (async () => {
   try {
-    await pool.query("SELECT 1");
+    await connectDB()
     console.log("DB is connected....");
 
     app.listen(PORT, () => {
