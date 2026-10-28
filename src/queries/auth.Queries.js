@@ -18,7 +18,7 @@ export const findUserByUsername = async (username) => {
 
 export const createUser = async (username, password) => {
   const result = await pool.query(
-    "insert into users(username,password) values($1,$2) returning id,username",
+    "INSERT INTO users(username,password) values($1,$2) RETURNING id,username",
     [username, password],
   );
   return result.rows[0] || null;

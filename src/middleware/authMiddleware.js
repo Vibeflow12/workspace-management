@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { findUserBYId } from "../queries/auth.Queries";
+import { findUserBYId } from "../queries/auth.Queries.js";
 
 export const authMiddleware = async (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
@@ -30,4 +30,5 @@ export const authMiddleware = async (req, res, next) => {
     return res.status(500).json({
       message: "internal server error",
     });
-  };
+  }
+}
