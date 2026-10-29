@@ -29,6 +29,9 @@ const createTables = `
   completed         BOOLEAN DEFAULT FALSE,
   workspace_id      INTEGER REFERENCES workspace(id) ON DELETE CASCADE NOT NULL
     );
+
+  ALTER TABLE tasks
+  ADD COLUMN due_date DATE;
   `;
 
 export async function connectDB() {

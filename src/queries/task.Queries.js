@@ -1,20 +1,20 @@
 import { pool } from "../db.js";
 
-export const createTask = async (workspaceId, userID, title, description) => {
+export const createTask = async (workspaceId, userID, title, description, due_date) => {
   const result = await pool.query(
-    `INSERT INTO tasks(title,description,workspace_id)
+    `INSERT INTO tasks(title,description,workspace_id,due_date)
     SELECT $3:: text, $4:: text, id
     FROM workspace
     WHERE id=$1 AND user_id = $2
-    RETURNING id,title, description, completed, workspace_id`,
-    [workspaceId, userID, title, description],
+    RETURNING id,title, description, completed, workspace_id, due_date`,
+    [workspaceId, userID, title, description, due_date],
   );
   return result.rows[0] || null;
 };
 
 export const getTask = async (workspaceId, userID, limit, offset,search) => {
   const result = await pool.query(
-    `SELECT t.title, t.description, t.completed, t.workspace_id
+    `SELECT t.title, t.description, t.completed, t.workspace_id, t.due_date
     FROM tasks t
     JOIN workspace w on w.id = t.workspace_id
     WHERE t.workspace_id=$1 AND w.user_id=$2 AND t.title ILIKE $5

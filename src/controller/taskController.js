@@ -56,9 +56,6 @@ export const createTaskct = async (req, res) => {
   }
 };
 
-// Formula: OFFSET = (page_number - 1) * page_size)
-// const skip = (page - 1) * limit;
-
 export const getTaskct = async (req, res) => {
   try {
     const parsedData = stringToNumberSchema.safeParse(req.params.workspaceId);
@@ -94,14 +91,6 @@ export const getTaskct = async (req, res) => {
     });
   }
 };
-
-//  success: true,
-// currentPage: page,
-// totalPage: Math.ceil(totalPages / limit),
-// count: todos.length,
-// total: totalTodos,
-// message: "all todos fecthed",
-// todos,
 
 export const updateTaskct = async (req, res) => {
   try {
