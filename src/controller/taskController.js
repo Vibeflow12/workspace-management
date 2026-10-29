@@ -9,6 +9,7 @@ import {
   updateTaskSchema,
 } from "../validators/task.validator.js";
 import { stringToNumberSchema } from "../validators/strToNum.validator.js";
+import { paginationSchema } from "../validators/pagination.validator.js";
 
 export const createTaskct = async (req, res) => {
   try {
@@ -55,6 +56,9 @@ export const createTaskct = async (req, res) => {
   }
 };
 
+// Formula: OFFSET = (page_number - 1) * page_size)
+// const skip = (page - 1) * limit;
+
 export const getTaskct = async (req, res) => {
   try {
     const parsedData = stringToNumberSchema.safeParse(req.params.workspaceId);
@@ -65,8 +69,24 @@ export const getTaskct = async (req, res) => {
 
     const workspaceId = parsedData.data;
 
-    const result = await getTask(workspaceId, req.user.id);
-    return res.json({ tasks: result });
+    const parsedPaginationData = paginationSchema.safeParse(req.query)
+
+    if (!parsedPaginationData.success) {
+      return res.status(400).json({ message: parsedPaginationData.error.flatten() });
+    }
+
+    const {page, limit,search} = parsedPaginationData.data;
+
+    const OFFSET = (page - 1 ) * limit
+
+    const result = await getTask(workspaceId, req.user.id, limit , OFFSET,search);
+    return res.json({
+      currentPage: page,
+      count: result.length,
+      message: "all task fecthed",
+      tasks: result
+    });
+
   } catch (error) {
     console.error("ERROR: ", error);
     return res.status(500).json({
@@ -74,6 +94,14 @@ export const getTaskct = async (req, res) => {
     });
   }
 };
+
+//  success: true,
+// currentPage: page,
+// totalPage: Math.ceil(totalPages / limit),
+// count: todos.length,
+// total: totalTodos,
+// message: "all todos fecthed",
+// todos,
 
 export const updateTaskct = async (req, res) => {
   try {
@@ -147,6 +175,7 @@ export const deleteTaskct = async (req, res) => {
       message: "task deleted",
     });
   } catch (error) {
+    console.error("ERROR: ",error)
     return res.status(500).json({
       message: "internal server error",
     });

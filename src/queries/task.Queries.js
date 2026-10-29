@@ -12,15 +12,17 @@ export const createTask = async (workspaceId, userID, title, description) => {
   return result.rows[0] || null;
 };
 
-export const getTask = async (workspaceId, userID) => {
+export const getTask = async (workspaceId, userID, limit, offset,search) => {
   const result = await pool.query(
     `SELECT t.title, t.description, t.completed, t.workspace_id
     FROM tasks t
     JOIN workspace w on w.id = t.workspace_id
-    WHERE t.workspace_id=$1 AND w.user_id=$2`,
-    [workspaceId, userID],
+    WHERE t.workspace_id=$1 AND w.user_id=$2 AND t.title ILIKE $5
+    ORDER BY t.id ASC LIMIT $3 OFFSET $4
+    `,
+    [workspaceId, userID, limit, offset,`%${search}%`],
   );
-  return result.rows || null;
+  return result.rows;
 };
 
 export const updateTask = async (taskId, userID, completed) => {
