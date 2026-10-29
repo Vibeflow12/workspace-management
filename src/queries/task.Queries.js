@@ -1,0 +1,45 @@
+import { pool } from "../db.js";
+
+export const createTask = async (workspaceId, userID, title, description) => {
+  const result = await pool.query(
+    `INSERT INTO tasks(title,description,workspace_id)
+    SELECT $3:: text, $4:: text, id
+    FROM workspace
+    WHERE id=$1 AND user_id = $2
+    RETURNING id,title, description, completed, workspace_id`,
+    [workspaceId, userID, title, description],
+  );
+  return result.rows[0] || null;
+};
+
+export const getTask = async (workspaceId, userID) => {
+  const result = await pool.query(
+    `SELECT t.title, t.description, t.completed, t.workspace_id
+    FROM tasks t
+    JOIN workspace w on w.id = t.workspace_id
+    WHERE t.workspace_id=$1 AND w.user_id=$2`,
+    [workspaceId, userID],
+  );
+  return result.rows || null;
+};
+
+export const updateTask = async (taskId, userID, completed) => {
+  const result = await pool.query(
+    `UPDATE tasks
+    SET completed =$3
+    WHERE id=$1 AND workspace_id IN (SELECT id FROM workspace WHERE user_id=$2)
+    RETURNING id, title, description, completed, workspace_id`,
+    [taskId, userID, completed],
+  );
+  return result.rows[0] || null;
+};
+
+export const deleteTask = async (workspaceId, taskId, userID) => {
+  const result = await pool.query(
+    `DELETE FROM tasks
+    where workspace_id=$1 AND id=$2
+    AND workspace_id IN (SELECT id FROM workspace WHERE user_id = $3)`,
+    [workspaceId, taskId,userID],
+  );
+  return result.rowCount;
+};

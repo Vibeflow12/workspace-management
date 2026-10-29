@@ -2,6 +2,7 @@ import express from "express";
 import { connectDB } from "./db.js";
 import { authRouter } from "./routes/authRoutes.js";
 import { workspaceRouter } from "./routes/workspaceRoutes.js";
+import { taskRouter } from "./routes/taskRoutes.js";
 const app = express();
 
 const PORT = 3000;
@@ -14,6 +15,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/workspace", workspaceRouter);
+app.use("/api/v1/task", taskRouter);
 
 (async () => {
   try {

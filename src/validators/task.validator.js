@@ -1,8 +1,8 @@
 import z from "zod";
 
 export const createTaskSchema = z.object({
-  name: z.string().min(1).max(100),
-  description: z.string(),
+  title: z.string().min(1).max(100),
+  description: z.string().optional()
 });
 
 export const updateTaskSchema = z.object({

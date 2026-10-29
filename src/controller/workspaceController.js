@@ -3,6 +3,7 @@ import {
   deleteWorkspace,
   getWorkspaceByUser,
 } from "../queries/workspace.Queries.js";
+import { stringToNumberSchema } from "../validators/strToNum.validator.js";
 import { createWorkspaceSchema } from "../validators/workspace.validator.js";
 
 export const creatWrokspacect = async (req, res) => {
@@ -43,10 +44,12 @@ export const getAllWorkspacect = async (req, res) => {
 
 export const deleteWorkspacect = async (req, res) => {
   try {
-    const  workspaceId  = Number(req.params.workspaceId);
-    if (!Number.isInteger(workspaceId) || workspaceId <= 0) {
-      return res.status(400).json({ message: "invalid workspace id" });
+    const parsedData = stringToNumberSchema.safeParse(req.params.workspaceId);
+    if (!parsedData.success) {
+      return res.status(400).json({ message: parsedData.error.flatten() });
     }
+
+    const { workspaceId } = parsedData.parsedData;
 
     const result = await deleteWorkspace(workspaceId, req.user.id);
     if (result === 0) {
@@ -62,7 +65,3 @@ export const deleteWorkspacect = async (req, res) => {
     });
   }
 };
-
-//create workspace req name res {worspaceid:1}
-//get all workspace return all the workspace belongs to user res{workspace:[]}
-// delete workspace user can delete there own workspace,deleteing workspace must delete all the task belongigng
